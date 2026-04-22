@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Fabian A. — Python Automation Developer (Austria)</title>
+<meta name="description" content="Python developer based in Austria. I build scrapers, bots, dashboards, and API integrations — automation that runs 24/7 without you having to think about it.">
+<meta property="og:title" content="Fabian A. — Python Automation Developer">
+<meta property="og:description" content="Python developer based in Austria. I build scrapers, bots, dashboards, and API integrations — automation that runs 24/7.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fabian-a.vercel.app">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a0a'/><text x='50%25' y='50%25' font-family='monospace' font-size='14' font-weight='600' fill='%23ededed' text-anchor='middle' dominant-baseline='central'>fa</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #161616;
+    --border: #1f1f1f;
+    --border-strong: #2a2a2a;
+    --text: #ededed;
+    --text-dim: #a0a0a0;
+    --text-muted: #6a6a6a;
+    --available: oklch(0.75 0.15 150);
+    --accent: #0070F3;
+    --sans: "Geist", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --radius: 8px;
+    --maxw: 1200px;
+    --pad: clamp(20px, 4vw, 40px);
+    --section-gap: clamp(80px, 12vw, 140px);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  /* ---------- Background grain ---------- */
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+  }
+  ::selection { background: #2a2a2a; color: #fff; }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  .container {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding-left: var(--pad);
+    padding-right: var(--pad);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition: background-color .25s ease, border-color .25s ease, backdrop-filter .25s ease;
+  }
+  .nav.scrolled {
+    background: rgba(10,10,10,0.72);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    border-bottom-color: var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    gap: 32px;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .nav-links {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .nav-links a {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+    color: var(--text-dim);
+    padding: 7px 14px;
+    border-radius: 999px;
+    transition: color .2s ease;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-pill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0;
+    height: 34px;
+    transform: translate3d(0, -50%, 0);
+    background: #1a1a1a;
+    border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      opacity .2s ease,
+      transform .28s cubic-bezier(.34, 1.32, .64, 1),
+      width .28s cubic-bezier(.34, 1.32, .64, 1);
+    will-change: transform, width, opacity;
+  }
+  .nav-links.has-hover .nav-pill { opacity: 1; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .lang-toggle {
+    display: inline-flex;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+  .lang-toggle button {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color .15s ease, background-color .15s ease;
+  }
+  .lang-toggle button.active {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  .lang-toggle button:hover:not(.active) { color: var(--text-dim); }
+
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding-top: clamp(64px, 12vw, 140px);
+    padding-bottom: clamp(40px, 6vw, 72px);
+  }
+  .badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px 6px 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 36px;
+    isolation: isolate;
+  }
+  .badge::before {
+    content: "";
+    position: absolute;
+    inset: -9px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 50% 50%, #4ade80 0%, #4ade80 35%, transparent 75%);
+    filter: blur(24px);
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+    animation: badge-glow 4s ease-in-out infinite;
+  }
+  @keyframes badge-glow {
+    0%, 100% {
+      background: radial-gradient(circle at 50% 50%, #4ade80 0%, #4ade80 35%, transparent 75%);
+      opacity: 0.05;
+    }
+    50% {
+      background: radial-gradient(circle at 50% 50%, #0070F3 0%, #0070F3 35%, transparent 75%);
+      opacity: 0.05;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge::before { animation: none; }
+  }
+  .badge .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--available);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--available) 18%, transparent);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in oklab, var(--available) 18%, transparent); }
+    50%      { box-shadow: 0 0 0 5px color-mix(in oklab, var(--available) 8%, transparent); }
+  }
+
+  h1.hero-title {
+    font-size: clamp(40px, 6.2vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    margin: 0 0 24px;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+  .hero-sub {
+    font-size: clamp(17px, 1.6vw, 19px);
+    color: var(--text-dim);
+    max-width: 58ch;
+    margin: 0 0 40px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 18px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+    border: 1px solid transparent;
+    font-family: var(--sans);
+  }
+  .btn-primary {
+    background: #ededed;
+    color: #0a0a0a;
+  }
+  .btn-primary:hover { background: #ffffff; }
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .btn-secondary:hover { border-color: #3a3a3a; background: var(--surface); }
+  .btn .arrow { transition: transform .15s ease, color .15s ease; }
+  .btn:hover .arrow { transform: translateX(2px); color: var(--accent); }
+
+  .hero-foot {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    letter-spacing: -0.005em;
+    line-height: 1.45;
+    margin-top: 40px;
+    max-width: 480px;
+  }
+  .term-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .term-box {
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .term-line {
+    display: block;
+    color: #71717a;
+  }
+  .term-line + .term-line { margin-top: 4px; }
+  .term-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    margin-right: 10px;
+    vertical-align: 2px;
+    box-shadow: 0 0 0 3px rgba(74,222,128,0.12);
+  }
+  .term-cmd { color: var(--accent); }
+  .term-path { color: #71717a; }
+  .term-out {
+    display: inline-block;
+    color: var(--text);
+    transition: opacity .3s ease;
+  }
+  .term-out.fading { opacity: 0; }
+  .term-caret {
+    display: inline-block;
+    width: 1px;
+    height: 0.95em;
+    background: var(--text);
+    vertical-align: -2px;
+    margin-left: 4px;
+    animation: term-blink 1s steps(1, end) infinite;
+  }
+  @keyframes term-blink {
+    50% { opacity: 0; }
+  }
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section.block {
+    padding-top: clamp(40px, 6vw, 72px);
+    padding-bottom: 0;
+    scroll-margin-top: 80px;
+  }
+  section.block + section.block {
+    padding-top: var(--section-gap);
+  }
+  #services.block { padding-top: clamp(40px, 6vw, 72px); }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .section-label::before {
+    content: "";
+    width: 20px;
+    height: 1px;
+    background: var(--border-strong);
+  }
+  h2.section-title {
+    font-size: clamp(28px, 3.6vw, 40px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    font-weight: 500;
+    margin: 0 0 48px;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  /* ---------- SERVICES ---------- */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  @media (max-width: 960px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .services-grid { grid-template-columns: 1fr; } }
+
+  .service {
+    background: var(--bg);
+    padding: 28px 26px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 220px;
+    transition: background-color .2s ease;
+  }
+  .service:hover { background: var(--surface); }
+  .service-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: color-mix(in oklab, var(--accent) 60%, transparent);
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .service-num .also {
+    color: var(--text-muted);
+    font-size: 11px;
+    opacity: 0.8;
+  }
+  .service.secondary .service-title { color: var(--text-dim); }
+  .service-title {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--text);
+  }
+  .service-desc {
+    font-size: 14.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---------- SERVICES CTA CARD ---------- */
+  .service-cta {
+    background: var(--bg);
+    border: 1px dashed var(--border-strong);
+    margin: -1px;
+    border-radius: 0;
+    padding: 28px 26px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    min-height: 220px;
+    cursor: pointer;
+    color: inherit;
+    transition: border-color .2s ease, background-color .2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .service-cta:hover {
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    border-style: dashed;
+  }
+  .service-cta .cta-arrow {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+    transition: transform .2s ease;
+    display: inline-block;
+  }
+  .service-cta:hover .cta-arrow { transform: translateX(4px); }
+  .service-cta .service-title { font-size: 17px; font-weight: 500; letter-spacing: -0.015em; margin: 0; }
+  .service-cta .service-desc { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin: 0; max-width: 28ch; }
+
+  /* ---------- FEATURED WORK ---------- */
+  .work-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: clamp(28px, 4vw, 44px);
+  }
+  .work-title {
+    font-size: clamp(22px, 2.5vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin: 0 0 36px;
+    text-wrap: balance;
+  }
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 760px) {
+    .work-grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+  .work-block h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    font-weight: 500;
+  }
+  .work-block p {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .tech-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .pill {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- PROCESS ---------- */
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  @media (max-width: 760px) { .process-grid { grid-template-columns: 1fr; } }
+  .process-step {
+    padding: 32px 28px 36px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .process-step:last-child { border-right: none; }
+  @media (max-width: 760px) {
+    .process-step { border-right: none; border-bottom: 1px solid var(--border); padding-left: 0; padding-right: 0; }
+    .process-step:last-child { border-bottom: none; }
+  }
+  .process-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: color-mix(in oklab, var(--accent) 60%, transparent);
+    letter-spacing: 0.04em;
+  }
+  .process-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .process-desc {
+    font-size: 14.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 60px;
+    max-width: 920px;
+  }
+  @media (max-width: 760px) {
+    .about-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+  .about-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 8px;
+  }
+  .about-body p {
+    margin: 0 0 20px;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+  .about-body p + p { color: var(--text-dim); }
+  .about-body p:last-child { margin-bottom: 0; }
+
+  /* ---------- CONTACT ---------- */
+  .contact {
+    padding-top: var(--section-gap);
+    padding-bottom: var(--section-gap);
+    text-align: center;
+  }
+  .contact h2 {
+    font-size: clamp(40px, 6vw, 72px);
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    font-weight: 500;
+    margin: 0 0 20px;
+    text-wrap: balance;
+  }
+  .contact p.sub {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 52ch;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .mail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #ededed;
+    color: #0a0a0a;
+    padding: 14px 22px;
+    border-radius: var(--radius);
+    font-family: var(--mono);
+    font-size: 15px;
+    transition: background-color .15s ease, box-shadow .25s ease;
+    margin-bottom: 40px;
+  }
+  .mail-btn:hover {
+    background: #fff;
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
+                0 0 24px color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  .mail-btn .arrow { transition: transform .15s ease, color .15s ease; }
+  .mail-btn:hover .arrow { transform: translate(2px, -2px); color: var(--accent); }
+
+  .social-row {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .social-row a {
+    color: var(--text-dim);
+    transition: color .15s ease;
+  }
+  .social-row a:hover { color: var(--text); }
+  .social-row .dot-sep {
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+  }
+  .foot-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- UTIL ---------- */
+  [hidden] { display: none !important; }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+    transition: opacity .4s ease-out, transform .4s ease-out;
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="#top" class="logo">fabian.a</a>
+    <div class="nav-links" id="navLinks">
+      <span class="nav-pill" aria-hidden="true"></span>
+      <a href="#services" data-i18n="nav.services">Services</a>
+      <a href="#work" data-i18n="nav.work">Work</a>
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle" role="tablist" aria-label="Language">
+        <button data-lang="de" role="tab">DE</button>
+        <button data-lang="en" role="tab" class="active">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header id="top" class="container hero" data-screen-label="01 Hero">
+  <div class="badge">
+    <span class="dot" aria-hidden="true"></span>
+    <span data-i18n="hero.badge">Available for freelance work</span>
+  </div>
+  <h1 class="hero-title reveal" style="--reveal-delay: 0ms" data-i18n="hero.title">Python automation that runs 24/7.</h1>
+  <p class="hero-sub reveal" style="--reveal-delay: 100ms" data-i18n="hero.sub">I build scrapers, bots, dashboards, and API integrations that do the boring work so you don't have to.</p>
+  <div class="cta-row">
+    <button class="btn btn-primary" data-scroll="#work">
+      <span data-i18n="hero.ctaPrimary">View Work</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </button>
+    <button class="btn btn-secondary" data-scroll="#contact">
+      <span data-i18n="hero.ctaSecondary">Get in Touch</span>
+    </button>
+  </div>
+  <div class="hero-foot" aria-live="polite">
+    <span class="term-label">Live Status</span>
+    <div class="term-box">
+      <span class="term-line"><span class="term-dot" aria-hidden="true"></span><span class="term-path">~/fabian-a</span><span class="term-path"> $ </span><span class="term-cmd">uptime</span><span class="term-caret" aria-hidden="true"></span></span>
+      <span class="term-line"><span class="term-out" id="termOut">system running · 24/7 · 0 incidents this month</span></span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SERVICES ============ -->
+<section id="services" class="container block" data-screen-label="02 Services">
+  <div class="section-label"><span data-i18n="services.label">Services</span></div>
+  <h2 class="section-title" data-i18n="services.title">What I build.</h2>
+
+  <div class="services-grid">
+    <div class="service reveal" data-stagger="0">
+      <div class="service-num"><span>01</span></div>
+      <h3 class="service-title" data-i18n="s1.title">Web Scrapers &amp; Data Pipelines</h3>
+      <p class="service-desc" data-i18n="s1.desc">Automated collection, cleaning, and storage of data from any source. Scheduled, reliable, built to run unattended.</p>
+    </div>
+    <div class="service reveal" data-stagger="1">
+      <div class="service-num"><span>02</span></div>
+      <h3 class="service-title" data-i18n="s2.title">Telegram &amp; Discord Bots</h3>
+      <p class="service-desc" data-i18n="s2.desc">Real-time alerts, community automation, custom commands. From simple notifiers to complex multi-user systems.</p>
+    </div>
+    <div class="service reveal" data-stagger="2">
+      <div class="service-num"><span>03</span></div>
+      <h3 class="service-title" data-i18n="s3.title">Dashboards &amp; Internal Tools</h3>
+      <p class="service-desc" data-i18n="s3.desc">Streamlit and Flask dashboards that turn raw data into something your team can actually use. Hosted and ready to share.</p>
+    </div>
+    <div class="service reveal" data-stagger="3">
+      <div class="service-num"><span>04</span></div>
+      <h3 class="service-title" data-i18n="s4.title">API Integrations &amp; Automations</h3>
+      <p class="service-desc" data-i18n="s4.desc">Connecting systems that weren't meant to talk to each other. REST APIs, webhooks, scheduled jobs, error handling that actually works.</p>
+    </div>
+    <div class="service secondary reveal" data-stagger="4">
+      <div class="service-num"><span>05</span><span class="also" data-i18n="s5.flag">Also available</span></div>
+      <h3 class="service-title" data-i18n="s5.title">Custom Web Interfaces</h3>
+      <p class="service-desc" data-i18n="s5.desc">Need a frontend for your tool or a clean landing page? I build responsive, fast-loading sites — HTML/CSS/JS or React when needed.</p>
+    </div>
+    <a href="#contact" class="service-cta reveal" data-stagger="5" data-scroll="#contact">
+      <span class="cta-arrow" aria-hidden="true">→</span>
+      <h3 class="service-title" data-i18n="s6.title">Not listed?</h3>
+      <p class="service-desc" data-i18n="s6.desc">Tell me what you need. If it's Python or automation-shaped, I probably build it.</p>
+    </a>
+  </div>
+</section>
+
+<!-- ============ FEATURED WORK ============ -->
+<section id="work" class="container block" data-screen-label="03 Work">
+  <div class="section-label"><span data-i18n="work.label">Featured Work</span></div>
+  <h2 class="section-title" data-i18n="work.heading">A recent build.</h2>
+
+  <article class="work-card reveal">
+    <h3 class="work-title" data-i18n="work.title">Autonomous Data Collection &amp; Monitoring System</h3>
+    <div class="work-grid">
+      <div class="work-block">
+        <h4 data-i18n="work.problemLabel">Problem</h4>
+        <p data-i18n="work.problem">Manually tracking 70+ data sources in parallel is impossible to do reliably. Opportunities and anomalies get missed.</p>
+      </div>
+      <div class="work-block">
+        <h4 data-i18n="work.solutionLabel">Solution</h4>
+        <p data-i18n="work.solution">Built a Python-based system that monitors 70 data sources continuously, evaluates them against multiple rule sets in parallel, and fires real-time Telegram alerts when conditions match.</p>
+      </div>
+      <div class="work-block">
+        <h4 data-i18n="work.resultLabel">Result</h4>
+        <p data-i18n="work.result">Runs autonomously 24/7 on a Linux VPS via systemd. Exposed securely through Cloudflare Tunnel. Zero manual intervention required.</p>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="pill">Python</span>
+      <span class="pill">SQLite</span>
+      <span class="pill">Flask</span>
+      <span class="pill">Streamlit</span>
+      <span class="pill">Cloudflare Tunnel</span>
+      <span class="pill">systemd</span>
+      <span class="pill">Telegram Bot API</span>
+    </div>
+  </article>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="container block" data-screen-label="04 Process">
+  <div class="section-label"><span data-i18n="process.label">Process</span></div>
+  <h2 class="section-title" data-i18n="process.heading">How we work together.</h2>
+
+  <div class="process-grid">
+    <div class="process-step reveal" data-stagger="0">
+      <div class="process-num">01</div>
+      <h3 class="process-title" data-i18n="p1.title">Talk</h3>
+      <p class="process-desc" data-i18n="p1.desc">We talk about what you need. I tell you honestly if I can do it, how long it'll take, and what it'll cost.</p>
+    </div>
+    <div class="process-step reveal" data-stagger="1">
+      <div class="process-num">02</div>
+      <h3 class="process-title" data-i18n="p2.title">Build</h3>
+      <p class="process-desc" data-i18n="p2.desc">I build it. You get progress updates, not radio silence. Questions get answered within a day.</p>
+    </div>
+    <div class="process-step reveal" data-stagger="2">
+      <div class="process-num">03</div>
+      <h3 class="process-title" data-i18n="p3.title">Ship</h3>
+      <p class="process-desc" data-i18n="p3.desc">I hand it over running, documented, and with everything you need to maintain it — or I maintain it for you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="container block" data-screen-label="05 About">
+  <div class="about-grid">
+    <div class="about-label" data-i18n="about.label">About</div>
+    <div class="about-body reveal">
+      <p data-i18n="about.p1">I'm a self-taught Python developer based in Austria. I focus on automation, data systems, and backend tooling — the kind of work that runs in the background and makes everything else possible. When a project needs a frontend or landing page, I build that too.</p>
+      <p data-i18n="about.p2">I'm early in my freelance career, which means two things: my rates are fair, and I take every project seriously because my reputation is still being built. If you want a developer who's going to disappear mid-project, hire someone else. If you want someone who'll actually finish what they started, we should talk.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="container contact reveal" data-screen-label="06 Contact">
+  <h2 data-i18n="contact.title">Let's build something.</h2>
+  <p class="sub" data-i18n="contact.sub">Tell me what you need — I'll get back to you within 24 hours with honest feedback and a realistic plan. I prefer email — it keeps everything clear and documented.</p>
+  <a class="mail-btn" href="/cdn-cgi/l/email-protection#80e1edece1e3e8e5f2aee6e1e2e9e1eec0e7ede1e9ecaee3efed">
+    <span class="__cf_email__" data-cfemail="bfded2d3dedcd7dacd91d9deddd6ded1ffd8d2ded6d391dcd0d2">[email&#160;protected]</span>
+    <span class="arrow" aria-hidden="true">↗</span>
+  </a>
+  <div class="social-row">
+    <a href="https://github.com/amlacher0407-ai" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container foot-inner">
+    <span>fabian.a</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ---------- Reveal on scroll (IntersectionObserver) ----------
+  (() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = document.querySelectorAll('.reveal');
+    if (reduce) { items.forEach(el => el.classList.add('in')); return; }
+
+    // Hero elements already have their --reveal-delay set; reveal on load.
+    const hero = document.querySelectorAll('.hero .reveal');
+    requestAnimationFrame(() => hero.forEach(el => el.classList.add('in')));
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const stagger = parseInt(el.dataset.stagger || '0', 10);
+        el.style.setProperty('--reveal-delay', (stagger * 80) + 'ms');
+        el.classList.add('in');
+        io.unobserve(el);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    items.forEach(el => {
+      if (el.closest('.hero')) return; // handled above
+      io.observe(el);
+    });
+  })();
+
+  // ---------- Nav hover pill (direction-aware tracking) ----------
+  (() => {
+    const wrap = document.getElementById('navLinks');
+    if (!wrap) return;
+    const pill = wrap.querySelector('.nav-pill');
+    const links = wrap.querySelectorAll('a');
+    const move = (el) => {
+      const wrapRect = wrap.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const x = r.left - wrapRect.left;
+      const w = r.width;
+      pill.style.width = w + 'px';
+      pill.style.transform = `translate3d(${x}px, -50%, 0)`;
+    };
+    links.forEach(a => {
+      a.addEventListener('mouseenter', () => {
+        move(a);
+        wrap.classList.add('has-hover');
+      });
+      a.addEventListener('focus', () => {
+        move(a);
+        wrap.classList.add('has-hover');
+      });
+    });
+    wrap.addEventListener('mouseleave', () => wrap.classList.remove('has-hover'));
+    wrap.addEventListener('focusout', (e) => {
+      if (!wrap.contains(e.relatedTarget)) wrap.classList.remove('has-hover');
+    });
+  })();
+
+  // ---------- Nav scroll state ----------
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 8) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- Smooth scroll (explicit anchors + data-scroll buttons) ----------
+  document.querySelectorAll('[data-scroll]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(el.getAttribute('data-scroll'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ---------- i18n ----------
+  const STRINGS = {
+    en: {
+      "nav.services": "Services",
+      "nav.work": "Work",
+      "nav.about": "About",
+      "nav.contact": "Contact",
+
+      "hero.badge": "Available for freelance work",
+      "hero.title": "Python automation that runs 24/7.",
+      "hero.sub": "I build scrapers, bots, dashboards, and API integrations that do the boring work so you don't have to.",
+      "hero.ctaPrimary": "View Work",
+      "hero.ctaSecondary": "Get in Touch",
+      "hero.foot": "Based in Austria · Focused on Python automation. Frontends on request.",
+
+      "services.label": "Services",
+      "services.title": "What I build.",
+      "s1.title": "Web Scrapers & Data Pipelines",
+      "s1.desc": "Automated collection, cleaning, and storage of data from any source. Scheduled, reliable, built to run unattended.",
+      "s2.title": "Telegram & Discord Bots",
+      "s2.desc": "Real-time alerts, community automation, custom commands. From simple notifiers to complex multi-user systems.",
+      "s3.title": "Dashboards & Internal Tools",
+      "s3.desc": "Streamlit and Flask dashboards that turn raw data into something your team can actually use. Hosted and ready to share.",
+      "s4.title": "API Integrations & Automations",
+      "s4.desc": "Connecting systems that weren't meant to talk to each other. REST APIs, webhooks, scheduled jobs, error handling that actually works.",
+      "s5.title": "Custom Web Interfaces",
+      "s5.desc": "Need a frontend for your tool or a clean landing page? I build responsive, fast-loading sites — HTML/CSS/JS or React when needed.",
+      "s5.flag": "Also available",
+
+      "s6.title": "Not listed?",
+      "s6.desc": "Tell me what you need. If it's Python or automation-shaped, I probably build it.",
+
+      "work.label": "Featured Work",
+      "work.heading": "A recent build.",
+      "work.title": "Autonomous Data Collection & Monitoring System",
+      "work.problemLabel": "Problem",
+      "work.problem": "Manually tracking 70+ data sources in parallel is impossible to do reliably. Opportunities and anomalies get missed.",
+      "work.solutionLabel": "Solution",
+      "work.solution": "Built a Python-based system that monitors 70 data sources continuously, evaluates them against multiple rule sets in parallel, and fires real-time Telegram alerts when conditions match.",
+      "work.resultLabel": "Result",
+      "work.result": "Runs autonomously 24/7 on a Linux VPS via systemd. Exposed securely through Cloudflare Tunnel. Zero manual intervention required.",
+
+      "process.label": "Process",
+      "process.heading": "How we work together.",
+      "p1.title": "Talk",
+      "p1.desc": "We talk about what you need. I tell you honestly if I can do it, how long it'll take, and what it'll cost.",
+      "p2.title": "Build",
+      "p2.desc": "I build it. You get progress updates, not radio silence. Questions get answered within a day.",
+      "p3.title": "Ship",
+      "p3.desc": "I hand it over running, documented, and with everything you need to maintain it — or I maintain it for you.",
+
+      "about.label": "About",
+      "about.p1": "I'm a self-taught Python developer based in Austria. I focus on automation, data systems, and backend tooling — the kind of work that runs in the background and makes everything else possible. When a project needs a frontend or landing page, I build that too.",
+      "about.p2": "I'm early in my freelance career, which means two things: my rates are fair, and I take every project seriously because my reputation is still being built. If you want a developer who's going to disappear mid-project, hire someone else. If you want someone who'll actually finish what they started, we should talk.",
+
+      "contact.title": "Let's build something.",
+      "contact.sub": "Tell me what you need — I'll get back to you within 24 hours with honest feedback and a realistic plan. I prefer email — it keeps everything clear and documented.",
+
+      "term.0": "system running · 24/7 · 0 incidents this month",
+      "term.1": "available for new projects · response < 24h",
+      "term.2": "based in austria · building from a home office",
+      "term.3": "python · automation · dashboards · apis"
+    },
+    de: {
+      "nav.services": "Leistungen",
+      "nav.work": "Arbeit",
+      "nav.about": "Über",
+      "nav.contact": "Kontakt",
+
+      "hero.badge": "Verfügbar für Freelance-Projekte",
+      "hero.title": "Python-Automation, die rund um die Uhr läuft.",
+      "hero.sub": "Ich baue Scraper, Bots, Dashboards und API-Integrationen — die unsichtbare Arbeit, die dein Business am Laufen hält.",
+      "hero.ctaPrimary": "Meine Arbeit",
+      "hero.ctaSecondary": "Kontakt",
+      "hero.foot": "Aus Österreich · Fokus auf Python-Automation. Frontends auf Anfrage.",
+
+      "services.label": "Leistungen",
+      "services.title": "Was ich baue.",
+      "s1.title": "Web Scraper & Daten-Pipelines",
+      "s1.desc": "Automatisierte Datenerfassung, -bereinigung und -speicherung aus beliebigen Quellen. Zuverlässig, geplant, läuft unbeaufsichtigt.",
+      "s2.title": "Telegram- & Discord-Bots",
+      "s2.desc": "Echtzeit-Alerts, Community-Automation, eigene Commands. Von einfachen Notifiern bis zu komplexen Multi-User-Systemen.",
+      "s3.title": "Dashboards & Interne Tools",
+      "s3.desc": "Streamlit- und Flask-Dashboards, die Rohdaten in etwas verwandeln, mit dem dein Team tatsächlich arbeiten kann.",
+      "s4.title": "API-Integrationen & Automatisierungen",
+      "s4.desc": "Systeme verbinden, die nie dafür gebaut waren. REST APIs, Webhooks, geplante Jobs, Fehlerbehandlung, die auch wirklich funktioniert.",
+      "s5.title": "Frontends & Landingpages",
+      "s5.desc": "Brauchst du ein Frontend für dein Tool oder eine saubere Landingpage? Ich baue responsive, schnell ladende Seiten — HTML/CSS/JS oder React wenn nötig.",
+      "s5.flag": "Auch verfügbar",
+
+      "s6.title": "Nicht aufgelistet?",
+      "s6.desc": "Sag mir, was du brauchst. Wenn es mit Python oder Automation zu tun hat, baue ich es wahrscheinlich.",
+
+      "work.label": "Ausgewählte Arbeit",
+      "work.heading": "Ein aktuelles Projekt.",
+      "work.title": "Autonomes Daten- & Monitoring-System",
+      "work.problemLabel": "Problem",
+      "work.problem": "70+ Datenquellen parallel manuell zu überwachen ist unmöglich zuverlässig zu schaffen. Gelegenheiten und Anomalien werden übersehen.",
+      "work.solutionLabel": "Lösung",
+      "work.solution": "Ein Python-basiertes System, das 70 Datenquellen kontinuierlich überwacht, sie parallel gegen mehrere Regelsätze auswertet und Echtzeit-Telegram-Alerts auslöst, wenn Bedingungen zutreffen.",
+      "work.resultLabel": "Ergebnis",
+      "work.result": "Läuft autonom 24/7 auf einem Linux VPS via systemd. Sicher zugänglich über Cloudflare Tunnel. Keinerlei manueller Eingriff nötig.",
+
+      "process.label": "Prozess",
+      "process.heading": "Wie wir zusammenarbeiten.",
+      "p1.title": "Gespräch",
+      "p1.desc": "Wir reden darüber, was du brauchst. Ich sage dir ehrlich, ob ich das machen kann, wie lange es dauert und was es kostet.",
+      "p2.title": "Umsetzung",
+      "p2.desc": "Ich bau's. Du bekommst Fortschritts-Updates statt Funkstille. Fragen werden binnen eines Tages beantwortet.",
+      "p3.title": "Übergabe",
+      "p3.desc": "Ich liefere es laufend und dokumentiert, mit allem was du brauchst um es zu warten — oder ich warte es für dich.",
+
+      "about.label": "Über mich",
+      "about.p1": "Ich bin ein selbständiger Python-Entwickler aus Österreich. Mein Fokus liegt auf Automatisierung, Datensystemen und Backend-Tools — die Art von Arbeit, die im Hintergrund läuft und alles andere erst möglich macht. Wenn ein Projekt ein Frontend oder eine Landingpage braucht, baue ich das auch.",
+      "about.p2": "Ich stehe am Anfang meiner Freelance-Karriere, was zwei Sachen bedeutet: meine Preise sind fair, und ich nehme jedes Projekt ernst, weil ich meinen Ruf erst aufbaue. Wenn du einen Entwickler willst, der mitten im Projekt verschwindet — such jemand anderen. Wenn du jemanden willst, der fertig bringt, was er angefangen hat, sollten wir reden.",
+
+      "contact.title": "Bauen wir etwas.",
+      "contact.sub": "Sag mir, was du brauchst — ich melde mich binnen 24 Stunden mit ehrlichem Feedback und einem realistischen Plan. Ich bevorzuge Email — so bleibt alles klar und dokumentiert.",
+
+      "term.0": "system läuft · 24/7 · 0 vorfälle diesen monat",
+      "term.1": "verfügbar für neue projekte · antwort < 24h",
+      "term.2": "aus österreich · gebaut im home office",
+      "term.3": "python · automation · dashboards · apis"
+    }
+  };
+
+  const setLang = (lang) => {
+    const dict = STRINGS[lang];
+    if (!dict) return;
+    document.documentElement.setAttribute('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) el.textContent = dict[key];
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+    try { localStorage.setItem('fabian.lang', lang); } catch (e) {}
+  };
+
+  document.querySelectorAll('.lang-toggle button').forEach(b => {
+    b.addEventListener('click', () => setLang(b.getAttribute('data-lang')));
+  });
+
+  // Restore language choice
+  let saved = 'en';
+  try { saved = localStorage.getItem('fabian.lang') || 'en'; } catch (e) {}
+  setLang(saved);
+
+  // ---------- Terminal status rotator ----------
+  (() => {
+    const out = document.getElementById('termOut');
+    if (!out) return;
+    const keys = ['term.0', 'term.1', 'term.2', 'term.3'];
+    let idx = 0;
+    const currentLang = () =>
+      document.querySelector('.lang-toggle button.active')?.getAttribute('data-lang') || 'en';
+    const render = () => {
+      const dict = STRINGS[currentLang()];
+      out.textContent = dict[keys[idx]];
+    };
+    // Keep output in sync with language toggle (including initial load)
+    const syncOnLang = () => render();
+    document.querySelectorAll('.lang-toggle button').forEach(b =>
+      b.addEventListener('click', () => setTimeout(syncOnLang, 0))
+    );
+    render();
+    setInterval(() => {
+      out.classList.add('fading');
+      setTimeout(() => {
+        idx = (idx + 1) % keys.length;
+        render();
+        out.classList.remove('fading');
+      }, 300);
+    }, 8000);
+  })();
+</script>
+</body>
+</html>
